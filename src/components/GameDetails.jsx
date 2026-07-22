@@ -6,17 +6,20 @@ function GameDetails() {
   const { id } = useParams();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    setNotFound(false);
     getGameDetails(id)
       .then((data) => {
         setGame(data);
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        if (err.message.includes("404")) {
+          setNotFound(true);
+        }
         setLoading(false);
       });
   }, [id]);
@@ -28,10 +31,15 @@ function GameDetails() {
       </div>
     );
 
-  if (error)
+  if (notFound)
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <p className="text-red-500 text-xl">Error: {error}</p>
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center px-6 text-center">
+        <p className="text-white text-xl mb-4">
+          Sorry, full details aren't available for this game.
+        </p>
+        <Link to="/" className="text-blue-400 hover:text-blue-300">
+          ← Back to games
+        </Link>
       </div>
     );
 
